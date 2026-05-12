@@ -1,3 +1,9 @@
+
+/*
+ID TELEGRAM : @mhdvia
+*/
+
+
 package ui
 import Animation.AndroidUtilities.dp
 import Animation.AndroidUtilities.sp
@@ -124,19 +130,6 @@ class ScrollAnimator(context: Context) : FrameLayout(context) {
 
                         imageIcon.scaleX = scale
                         imageIcon.scaleY = scale
-
-
-
-
                 }
-
-
-
-
-
-
-
-
-
         }
 }
