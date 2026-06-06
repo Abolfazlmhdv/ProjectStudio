@@ -1,71 +1,82 @@
 package com.example.canvasapp
 import android.animation.AnimatorSet
 import android.animation.ValueAnimator
-import android.annotation.SuppressLint
+import com.example.canvasapp.AndroidUtilites.dp
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.util.TypedValue
-import android.widget.FrameLayout
-import android.widget.TextView
-import androidx.core.view.updateLayoutParams
+import android.view.Gravity
+import android.view.View
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.LinearLayout
 
-import com.example.canvasapp.AndroidUtilites.dp
+class AddnoteView (context: Context) : LinearLayout(context) {
 
-@SuppressLint("ViewConstructor")
-class PopupView(context: Context) : FrameLayout(context) {
 
-    init { content() }
+    init { addNote() ; orientation = VERTICAL }
 
-    private fun content() {
-        val frameButton = FrameLayout(context).apply {
-            val radius = GradientDrawable().apply {
-                cornerRadius = 8f
-                setColor(Color.RED)
-            }
-            background = radius
+    private fun addNote() {
+
+        val topSection = LinearLayout(context).apply {
+            orientation = HORIZONTAL
+            setBackgroundColor(Color.WHITE)
         }
-        addView(frameButton)
+        addView(topSection, Helper.createLinear(Helper.MATCH_PARENT, Helper.WRAP_CONTENT, Gravity.CENTER, 0,0,0,0))
 
-
-        val text = TextView(context).apply {
-            setText("Click")
-            setTextColor(Color.parseColor("#ffffff"))
-            setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15f)
+        val sendNote = ImageView(context).apply {
+            setImageResource(R.drawable.ic_launcher_background)
+            setPadding(dp(8), dp(8), dp(8), dp(8))
         }
-        frameButton.addView(text)
+        topSection.addView(sendNote, Helper.createLinear(width = 35, height = 35, Gravity.START, 10,0,0,0))
 
-        frameButton.setOnClickListener{view ->
-            val drawable = frameButton.background as GradientDrawable
-            text.text = ""
 
-            val width = ValueAnimator.ofInt(width, dp(50)).apply {
-                addUpdateListener{
-                    val width = it.animatedValue as Int
-                    frameButton.updateLayoutParams { this.width = width }
+        val texttitle = EditText(context).apply {
+            setHint(context.getString(R.string.title))
+            setTextSize(TypedValue. COMPLEX_UNIT_DIP, 15f)
+            setTextColor(Color.BLACK)
+            setPadding(dp(8), dp(8), dp(8), dp(8))
+            setHintTextColor(Color.parseColor("#eeeeee"))
+        }
+        topSection.addView(texttitle, Helper.createLinear(Helper.MATCH_PARENT, Helper.WRAP_CONTENT,
+            Gravity.START, 0,0,0,0
+        ))
+
+        topSection.setOnClickListener{v ->
+            val drawable = topSection.background as GradientDrawable
+            val startHeight = topSection.height
+            val endHeight =  dp(150)
+            val heightLinear = ValueAnimator.ofInt(startHeight, endHeight).apply {
+                addUpdateListener{animator ->
+                    val value = animator.animatedValue as Int
+
+                    topSection.layoutParams = topSection.layoutParams.apply {
+                        height = value
+                    }
                 }
             }
-
-            val radius = ValueAnimator.ofInt(8,25).apply {
-                addUpdateListener{
-                 drawable.cornerRadius = it.animatedValue as Float
+            val radius = ValueAnimator.ofFloat(0f, 15f).apply {
+                addUpdateListener { animator ->
+                    val radius = animator.animatedValue as Float
+                    val radii = floatArrayOf(
+                        0f,0f,
+                        0f,0f,
+                        radius, radius,
+                        radius, radius
+                    )
+                    drawable.cornerRadii = radii
                 }
-            }
-            val color = ValueAnimator.ofArgb(Color.RED, Color.BLACK).apply {
-                addUpdateListener{
-                    val color = it.animatedValue as Int
-                    drawable.setColor(color)
-                }
-
             }
             AnimatorSet().apply {
-                playTogether(width, radius, color)
-                duration = 400
-                start()
-            }
+                playTogether(heightLinear, radius)
+                setDuration(250)
+                 start()
+             }
         }
+        val view = View(context).apply {
+            setBackgroundColor(Color.parseColor("#e0e0e0"))
+        }
+        addView(view, Helper.createLinear(Helper.MATCH_PARENT, height = 50, Gravity.CENTER, 0,0,0,0))
     }
-
-
-
 }
